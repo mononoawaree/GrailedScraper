@@ -1,4 +1,4 @@
 package org.example.grailedmldemo.exception;
 
-public class FetchException {
+public class FetchException extends Throwable {
 }
