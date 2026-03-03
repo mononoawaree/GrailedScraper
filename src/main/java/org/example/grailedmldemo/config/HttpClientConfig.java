@@ -25,6 +25,5 @@ public class HttpClientConfig {
     //     // Return a ProxySelector that knows how to pick a proxy or VPN endpoint.
     //     // For a simple fixed proxy:
     //     // return ProxySelector.of(new InetSocketAddress("proxy.mycorp.com", 3128));
-    //     // For more advanced round‑robin / health‑checked pools you can implement your own.
     // }
 }
