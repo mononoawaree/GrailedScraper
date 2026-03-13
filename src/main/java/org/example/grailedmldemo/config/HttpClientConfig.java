@@ -1,14 +1,10 @@
 package org.example.grailedmldemo.config;
 import okhttp3.OkHttpClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import java.time.Duration;
 
 //OKHttp bean configuration for making HTTP requests to external APIs, such as the Grailed API.
 //+possibly include VPN/proxy configuration if needed for bypassing security.
-@Configuration
 public class HttpClientConfig {
-    @Bean
     public OkHttpClient okHttpClient() {
         return new OkHttpClient.Builder()
                 .connectTimeout(Duration.ofSeconds(5))

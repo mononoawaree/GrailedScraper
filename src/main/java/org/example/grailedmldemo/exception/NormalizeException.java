@@ -1,4 +1,4 @@
 package org.example.grailedmldemo.exception;
 
-public class NormalizeException {
+public class NormalizeException extends Throwable {
 }
