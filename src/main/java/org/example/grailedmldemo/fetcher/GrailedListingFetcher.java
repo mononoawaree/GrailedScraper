@@ -26,7 +26,7 @@ public class GrailedListingFetcher implements Fetcher {
     }
 
     // Builds the POST request
-    // Returns raw JSON string for the parser to handle
+    // Returns raw JSON string
     @Override
     public String fetch(String designerName, int page) throws FetchException, IOException {
         String encodedName = URLEncoder.encode(designerName, StandardCharsets.UTF_8);
@@ -38,7 +38,6 @@ public class GrailedListingFetcher implements Fetcher {
                 + "&numericFilters=%5B%22sold_price%3E%3D0%22%2C%22sold_price%3C%3D1000000%22%5D"
                 + "&query=";
         String body = "{\"requests\":[{\"indexName\":\"Listing_sold_production\",\"params\":\"" + params + "\"}]}";
-        System.out.println("Request body: " + body);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), body);
         Request request = new Request.Builder()
                 .url(baseUrl)
