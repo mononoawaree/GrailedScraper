@@ -1,8 +1,10 @@
 package org.example.grailedmldemo.model;
+import lombok.Builder;
 
 import java.util.List;
 
 //raw fields corresponding to the scraped data from the Grailed website, which will then be parsed and normalized.
+@Builder
 public class GrailedListingRaw {
     // Core identity
     private String id;                    // "87939511"
@@ -28,7 +30,7 @@ public class GrailedListingRaw {
     // Pricing
     int price;                    // 169 (final listed price)
     int soldPrice;                // 169
-    List<Integer> priceDrops;     // [192, 179, 169]
+    List<Integer> price_drops;     // [192, 179, 169]
     boolean soldPriceIncludesShipping;  // false
     int soldShippingPrice;        // 15
 
@@ -55,8 +57,6 @@ public class GrailedListingRaw {
     // Flags
     boolean sold;                 // true
     boolean dropped;              // true (had price drops)
-    boolean buynow;               // true
-    boolean makeoffer;            // true
 
     // Photo
     String coverPhotoUrl;         // the image URL

@@ -16,7 +16,6 @@ public class GrailedListingFetcher implements Fetcher {
     private final String baseUrl;
     private final String apiKey;
     private final String appId;
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     public GrailedListingFetcher(OkHttpClient client, String baseUrl, String apiKey, String appId) {
         this.client = client;
