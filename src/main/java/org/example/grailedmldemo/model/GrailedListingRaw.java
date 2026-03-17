@@ -1,63 +1,92 @@
 package org.example.grailedmldemo.model;
+import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 //raw fields corresponding to the scraped data from the Grailed website, which will then be parsed and normalized.
-@Builder
+@Data
 public class GrailedListingRaw {
-    // Core identity
-    private String id;                    // "87939511"
-    private String title;                 // "Helmut Lang 98' Jeans"
-    private String marketplace;           // "grailed"
+    //Identification
+    private int id; //listing id
+    private String title;
+    private String department;
+    //Designer
+    private List<Designer> designers;
 
-    // Item details
-    String category;              // "bottoms"
-    String categoryPath;          // "bottoms.denim"
-    String categoryPathSize;     // "bottoms.denim.32"
-    String categorySize;          // "bottoms.32"
-    String size;                  // "32"
-    String color;                // "blue"
-    String condition;            // "is_gently_used"
-    String department;            // "menswear"
-    String location;              // "United States"
-    List<String> styles;          // ["streetwear"]
+    @Data
+    public static class Designer {
+        private int id; // designer id
+        private String name;
+    }
 
-    // Designer
-    String designerNames;         // "Helmut Lang"
-    int designerId;               // 9712
+    //Categorization
+    private String category;
+    private String category_path;
+    private String category_size;
+    private String category_path_size;
 
-    // Pricing
-    int price;                    // 169 (final listed price)
-    int soldPrice;                // 169
-    List<Integer> price_drops;     // [192, 179, 169]
-    boolean soldPriceIncludesShipping;  // false
-    int soldShippingPrice;        // 15
+    //Item Attributes
+    private String color;
+    private String condition;
+    private String size;
+    private List<String> styles;
+    private List<Trait> traits;
 
-    // Timestamps
-    String createdAt;             // "2025-11-16T19:34:24.837Z"
-    String soldAt;                // "2026-03-13T03:20:11.040Z"  ← the one you asked about
-    String bumpedAt;              // "2025-12-10T23:51:45.768Z"
-    String priceUpdatedAt;        // "2025-12-10T23:50:57.046Z"
-    long createdAtI;              // unix timestamp version
-    long soldAtI;                 // unix timestamp version
+    @Data
+    public static class Trait {
+        private String name;
+        private String value;
+    }
 
-    // Seller
-    int sellerTotalSales;         // 25
-    double sellerRatingAverage;   // 4.916...
-    int sellerRatingCount;        // 12
-    boolean trustedSeller;        // true
+    //Pricing
+    private int price; //last asking price
+    private int sold_price; //for how much it was actually sold
+    private int sold_shipping_price;
+    private List<Integer> price_drops;
 
-    // Engagement
-    int followerno;               // 209 (followers)
-    double heatF;                 // 4364.59 (Grailed's demand score)
-    int photoCount;               // 10
-    int measurementCount;         // 5
+    //Sale status
+    private boolean sold;
+    private boolean dropped;
 
-    // Flags
-    boolean sold;                 // true
-    boolean dropped;              // true (had price drops)
+    //Timestamps
+    private String created_at;
+    private String price_updated_at; //tells when the last price drop happened relative to the sale
+    private String sold_at;
 
-    // Photo
-    String coverPhotoUrl;         // the image URL
+    //Demand Signals
+    @SerializedName("followerno")
+    private Integer followerCount; //can be null
+    private double heat_f;
+    private int photo_count;
+    private Integer measurement_count; //can be null
+
+    //Location
+    private String location;
+
+    //Cover Photo
+    private CoverPhoto cover_photo; //need "url" only
+
+    @Data
+    public static class CoverPhoto {
+        private String url;
+    }
+
+    //Seller
+    private User user;
+    @Data
+    public static class User {
+        private int id; //seller id
+        private int total_bought_and_sold;
+        private boolean trusted_seller;
+        private SellerScore seller_score;
+        @Data
+        public static class SellerScore {
+            private Double rating_average; // boxed — can be null
+            private int rating_count;
+        }
+    }
 }
