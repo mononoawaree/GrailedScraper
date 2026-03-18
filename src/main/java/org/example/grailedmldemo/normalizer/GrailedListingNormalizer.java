@@ -87,8 +87,13 @@ public class GrailedListingNormalizer implements Normalizer<GrailedListingRaw> {
         listing.setSellerId(rawData.getUser().getId());
         listing.setSellerTotalTransactions(rawData.getUser().getTotal_bought_and_sold());
         listing.setSellerTrusted(rawData.getUser().isTrusted_seller());
-        listing.setSellerRatingAverage(rawData.getUser().getSeller_score().getRating_average());
-        listing.setSellerRatingCount(rawData.getUser().getSeller_score().getRating_count());
+        if (rawData.getUser().getSeller_score() != null) {
+            listing.setSellerRatingAverage(rawData.getUser().getSeller_score().getRating_average());
+            listing.setSellerRatingCount(rawData.getUser().getSeller_score().getRating_count());
+        } else {
+            listing.setSellerRatingAverage(null);
+            listing.setSellerRatingCount(0);
+        }
         return listing;
     }
 }

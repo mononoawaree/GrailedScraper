@@ -2,6 +2,7 @@ package org.example.grailedmldemo;
 
 import okhttp3.OkHttpClient;
 import org.example.grailedmldemo.config.AlgoliaConfig;
+import org.example.grailedmldemo.config.DatabaseConfig;
 import org.example.grailedmldemo.exception.FetchException;
 import org.example.grailedmldemo.exception.ParseException;
 import org.example.grailedmldemo.fetcher.GrailedListingFetcher;
@@ -9,8 +10,10 @@ import org.example.grailedmldemo.model.GrailedListingRaw;
 import org.example.grailedmldemo.model.Listing;
 import org.example.grailedmldemo.normalizer.GrailedListingNormalizer;
 import org.example.grailedmldemo.parser.GrailedListingParser;
+import org.example.grailedmldemo.repository.ListingRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GrailedMlDemoApplication {
@@ -29,11 +32,18 @@ public class GrailedMlDemoApplication {
             throw new RuntimeException(e);
         }
         GrailedListingParser parser = new GrailedListingParser();
-        List<GrailedListingRaw> listings = parser.parse(json);
+        List<GrailedListingRaw> rawListings = parser.parse(json);
+        List<Listing> listings = new ArrayList<>();
         GrailedListingNormalizer normalizer = new GrailedListingNormalizer();
-        for (GrailedListingRaw listingRaw : listings) {
+        for (GrailedListingRaw listingRaw : rawListings) {
             Listing listing = normalizer.normalize(listingRaw);
-            System.out.println(listing.getTitle()+ " " + listing.getCategory() + " " + listing.getCategoryPath() + " " + listing.getCategorySize() + " " + listing.getCategoryPathSize());
+            listings.add(listing);
+        }
+        ListingRepository repository = new ListingRepository(DatabaseConfig.getDataSource());
+        try {
+            repository.saveAll(listings);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
         /*
         System.out.println("Listings:");
