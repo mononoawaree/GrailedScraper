@@ -6,6 +6,8 @@ import org.example.grailedmldemo.exception.FetchException;
 import org.example.grailedmldemo.exception.ParseException;
 import org.example.grailedmldemo.fetcher.GrailedListingFetcher;
 import org.example.grailedmldemo.model.GrailedListingRaw;
+import org.example.grailedmldemo.model.Listing;
+import org.example.grailedmldemo.normalizer.GrailedListingNormalizer;
 import org.example.grailedmldemo.parser.GrailedListingParser;
 
 import java.io.IOException;
@@ -27,10 +29,22 @@ public class GrailedMlDemoApplication {
             throw new RuntimeException(e);
         }
         GrailedListingParser parser = new GrailedListingParser();
-        List<GrailedListingRaw> lisings = parser.parse(json);
-        System.out.println("Listings:");
-        for (GrailedListingRaw listing : lisings) {
-            System.out.println(listing.getUser().getSeller_score().getRating_average());
+        List<GrailedListingRaw> listings = parser.parse(json);
+        GrailedListingNormalizer normalizer = new GrailedListingNormalizer();
+        for (GrailedListingRaw listingRaw : listings) {
+            Listing listing = normalizer.normalize(listingRaw);
+            System.out.println(listing.getTitle()+ " " + listing.getCategory() + " " + listing.getCategoryPath() + " " + listing.getCategorySize() + " " + listing.getCategoryPathSize());
         }
+        /*
+        System.out.println("Listings:");
+        int counter = 0;
+        for (GrailedListingRaw listing : listings) {
+            counter++;
+            System.out.println(counter);
+            for (GrailedListingRaw.Trait trait : listing.getTraits()) {
+                System.out.println(trait.getName() + ": " + trait.getValue());
+            }
+        }
+         */
     }
 }

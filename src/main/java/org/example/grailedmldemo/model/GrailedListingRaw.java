@@ -1,9 +1,6 @@
 package org.example.grailedmldemo.model;
 import com.google.gson.annotations.SerializedName;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -33,8 +30,8 @@ public class GrailedListingRaw {
     private String color;
     private String condition;
     private String size;
-    private List<String> styles;
-    private List<Trait> traits;
+    private List<String> styles; //
+    private List<Trait> traits; //
 
     @Data
     public static class Trait {
