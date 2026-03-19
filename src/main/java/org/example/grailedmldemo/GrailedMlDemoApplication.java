@@ -8,9 +8,11 @@ import org.example.grailedmldemo.exception.FetchException;
 import org.example.grailedmldemo.exception.ParseException;
 import org.example.grailedmldemo.fetcher.GrailedDesignerFetcher;
 import org.example.grailedmldemo.fetcher.GrailedListingFetcher;
+import org.example.grailedmldemo.model.GrailedDesignerRaw;
 import org.example.grailedmldemo.model.GrailedListingRaw;
 import org.example.grailedmldemo.model.Listing;
 import org.example.grailedmldemo.normalizer.GrailedListingNormalizer;
+import org.example.grailedmldemo.parser.GrailedDesignerParser;
 import org.example.grailedmldemo.parser.GrailedListingParser;
 import org.example.grailedmldemo.repository.ListingRepository;
 
@@ -70,6 +72,8 @@ public class GrailedMlDemoApplication {
             System.out.println("Error: " + e.getMessage());
             throw new RuntimeException(e);
         }
-        System.out.println("Designers JSON: " + designersJson);
+        GrailedDesignerParser designersParser = new GrailedDesignerParser();
+        List<GrailedDesignerRaw> designers = designersParser.parse(designersJson);
+
     }
 }
