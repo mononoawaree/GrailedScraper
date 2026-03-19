@@ -1,23 +1,17 @@
 package org.example.grailedmldemo;
 
 import okhttp3.OkHttpClient;
-import org.example.grailedmldemo.config.AlgoliaConfig;
 import org.example.grailedmldemo.config.DatabaseConfig;
 import org.example.grailedmldemo.config.GrailedApiConfig;
 import org.example.grailedmldemo.exception.FetchException;
 import org.example.grailedmldemo.exception.ParseException;
 import org.example.grailedmldemo.fetcher.GrailedDesignerFetcher;
-import org.example.grailedmldemo.fetcher.GrailedListingFetcher;
-import org.example.grailedmldemo.model.GrailedDesignerRaw;
+import org.example.grailedmldemo.model.GrailedDesigner;
 import org.example.grailedmldemo.model.GrailedListingRaw;
-import org.example.grailedmldemo.model.Listing;
-import org.example.grailedmldemo.normalizer.GrailedListingNormalizer;
 import org.example.grailedmldemo.parser.GrailedDesignerParser;
-import org.example.grailedmldemo.parser.GrailedListingParser;
-import org.example.grailedmldemo.repository.ListingRepository;
+import org.example.grailedmldemo.repository.DesignerRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GrailedMlDemoApplication {
@@ -73,7 +67,21 @@ public class GrailedMlDemoApplication {
             throw new RuntimeException(e);
         }
         GrailedDesignerParser designersParser = new GrailedDesignerParser();
-        List<GrailedDesignerRaw> designers = designersParser.parse(designersJson);
+        List<GrailedDesigner> designers = designersParser.parse(designersJson);
+        for (int i = 0; i < designers.size(); i++)  {
+            System.out.println(" Designer: " + i + " " + designers.get(i).getName() + " Count: " + designers.get(i).getCount());
+        }
+        /*
+        List<GrailedDesigner> designers = designersParser.parse(designersJson);
+        DesignerRepository designerRepository = new DesignerRepository(DatabaseConfig.getDataSource());
+        try {
+            for (GrailedDesigner designer : designers) {
+                designerRepository.save(designer);
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
 
+         */
     }
 }

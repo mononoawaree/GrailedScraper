@@ -18,7 +18,8 @@ public class ListingRepository {
     public void save(Listing listing) throws SQLException {
         String sql = "INSERT INTO sold_listings (id, title, department, source, designer_ids, designer_names, category, category_path, category_size, category_path_size, color, condition, size, styles, country_of_origin, price, sold_price, sold_shipping_price, price_drops, sold, dropped, created_at, price_updated_at, sold_at, cover_photo_url, location, seller_id, seller_total_transactions, seller_trusted, seller_rating_average, seller_rating_count, followers_count, heat_score, photo_count, measurement_count)"
                       + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" + "ON CONFLICT (id) DO NOTHING";
-        try (PreparedStatement pstmt = dataSource.getConnection().prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();) {
+            PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setInt(1, listing.getId());
             pstmt.setString(2, listing.getTitle());
             pstmt.setString(3, listing.getDepartment());
@@ -70,8 +71,8 @@ public class ListingRepository {
     public void saveAll(List<Listing> listings) throws SQLException {
         String sql = "INSERT INTO sold_listings (id, title, department, source, designer_ids, designer_names, category, category_path, category_size, category_path_size, color, condition, size, styles, country_of_origin, price, sold_price, sold_shipping_price, price_drops, sold, dropped, created_at, price_updated_at, sold_at, cover_photo_url, location, seller_id, seller_total_transactions, seller_trusted, seller_rating_average, seller_rating_count, followers_count, heat_score, photo_count, measurement_count)"
                 + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" + "ON CONFLICT (id) DO NOTHING";
-        Connection connection = dataSource.getConnection();
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(sql);
             connection.setAutoCommit(false);
             for (Listing listing : listings) {
                 pstmt.setInt(1, listing.getId());
