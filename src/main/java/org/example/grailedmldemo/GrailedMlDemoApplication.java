@@ -3,8 +3,10 @@ package org.example.grailedmldemo;
 import okhttp3.OkHttpClient;
 import org.example.grailedmldemo.config.AlgoliaConfig;
 import org.example.grailedmldemo.config.DatabaseConfig;
+import org.example.grailedmldemo.config.GrailedApiConfig;
 import org.example.grailedmldemo.exception.FetchException;
 import org.example.grailedmldemo.exception.ParseException;
+import org.example.grailedmldemo.fetcher.GrailedDesignerFetcher;
 import org.example.grailedmldemo.fetcher.GrailedListingFetcher;
 import org.example.grailedmldemo.model.GrailedListingRaw;
 import org.example.grailedmldemo.model.Listing;
@@ -18,6 +20,7 @@ import java.util.List;
 
 public class GrailedMlDemoApplication {
     public static void main(String[] args) throws IOException, ParseException {
+        /*
         String json;
         String baseUrl = AlgoliaConfig.getBaseUrl();
         System.out.println("Base URL: " + baseUrl);
@@ -56,5 +59,17 @@ public class GrailedMlDemoApplication {
             }
         }
          */
+        String designersJson;
+        String designersUrl = GrailedApiConfig.getDesignersUrl();
+        System.out.println("Designers URL: " + designersUrl);
+        OkHttpClient designersClient = new OkHttpClient();
+        GrailedDesignerFetcher designersFetcher = new GrailedDesignerFetcher(designersClient);
+        try {
+            designersJson = designersFetcher.fetch(designersUrl);
+        } catch (FetchException e) {
+            System.out.println("Error: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        System.out.println("Designers JSON: " + designersJson);
     }
 }
