@@ -4,6 +4,10 @@ import org.example.grailedmldemo.model.GrailedDesigner;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DesignerRepository {
 
@@ -24,5 +28,18 @@ public class DesignerRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public List<String> getAllDesignerNames() throws SQLException {
+        String sql = "SELECT name FROM designers";
+        List<String> names = new ArrayList<>();
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                names.add(rs.getString("name"));
+            }
+        }
+        return names;
     }
 }

@@ -1,6 +1,5 @@
 package org.example.grailedmldemo.config;
 
-import javax.sql.DataSource;
 import java.util.Properties;
 
 public class GrailedApiConfig {
