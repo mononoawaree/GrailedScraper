@@ -116,7 +116,11 @@ public class ListingRepository {
                 pstmt.setInt(32, listing.getFollowersCount());
                 pstmt.setDouble(33, listing.getHeatScore());
                 pstmt.setInt(34, listing.getPhotoCount());
-                pstmt.setInt(35, listing.getMeasurementCount());
+                if (listing.getMeasurementCount() != null) {
+                    pstmt.setInt(35, listing.getMeasurementCount());
+                } else {
+                    pstmt.setNull(35, java.sql.Types.INTEGER);
+                }
                 pstmt.addBatch();
             }
             pstmt.executeBatch();
