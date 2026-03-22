@@ -18,6 +18,7 @@ import org.example.grailedmldemo.repository.ListingRepository;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,45 +64,60 @@ public class GrailedScrapeService {
         }
         List<String> designerNames = designerRepository.getAllDesignerNames();
         //Loop thru all designers and their listings
+
         for (String designerName : designerNames) {
-            for (int pageCounter = 0; ;pageCounter++) {
-                String listingJson;
-                List<GrailedListingRaw> rawListings;
-                List<Listing> normalizedListings = new ArrayList<>();
-                System.out.println("Scraping: " + designerName + " | Page: " + pageCounter);
-                try {
-                    listingJson = grailedListingFetcher.fetch(designerName, pageCounter);
-                } catch (Exception | FetchException e) {
-                    System.out.println("Error fetching listings for " + designerName + ": " + e.getMessage());
-                    continue;
-                }
-                try {
-                    rawListings = grailedListingParser.parse(listingJson);
-                    //break if hit the end
-                    if (rawListings.isEmpty()) break;
-                } catch (ParseException e) {
-                    System.out.println("Error parsing listings for " + designerName + ": " + e.getMessage());
-                    continue;
-                }
-                try {
-                    for (GrailedListingRaw listingRaw : rawListings) {
-                        normalizedListings.add(grailedListingNormalizer.normalize(listingRaw));
+            Long maxSoldAt = null;
+            while (true) {
+                long minSoldAtInBatch = Long.MAX_VALUE;
+                boolean hasResults = false;
+                for (int i = 0; i < 25; i++) {
+                    String listingJson;
+                    List<GrailedListingRaw> rawListings;
+                    List<Listing> normalizedListings = new ArrayList<>();
+                    System.out.println("Scraping: " + designerName + " | Page: " + i);
+                    try {
+                        listingJson = grailedListingFetcher.fetch(designerName, i, maxSoldAt);
+                    } catch (Exception | FetchException e) {
+                        System.out.println("Error fetching listings for " + designerName + ": " + e.getMessage());
+                        continue;
                     }
-                } catch (Exception e) {
-                    System.out.println("Error normalizing listings for " + designerName + ": " + e.getMessage());
-                    continue;
+                    try {
+                        rawListings = grailedListingParser.parse(listingJson);
+                        //break if hit the end
+                        if (rawListings.isEmpty()) break;
+                        hasResults = true;
+                        for (GrailedListingRaw listing : rawListings) {
+                            if (listing.getSold_at_i() < minSoldAtInBatch) {
+                                minSoldAtInBatch = listing.getSold_at_i();
+                            }
+                        }
+                    } catch (ParseException e) {
+                        System.out.println("Error parsing listings for " + designerName + ": " + e.getMessage());
+                        continue;
+                    }
+                    try {
+                        for (GrailedListingRaw listingRaw : rawListings) {
+                            normalizedListings.add(grailedListingNormalizer.normalize(listingRaw));
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error normalizing listings for " + designerName + ": " + e.getMessage());
+                        continue;
+                    }
+                    try {
+                        listingRepository.saveAll(normalizedListings);
+                    } catch (Exception e) {
+                        System.err.println("Error saving listings for " + designerName + " page " + i + ": " + e.getMessage());
+                        continue;
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    hasResults = true;
                 }
-                try {
-                    listingRepository.saveAll(normalizedListings);
-                } catch (Exception e) {
-                    System.err.println("Error saving listings for " + designerName + " page " + pageCounter + ": " + e.getMessage());
-                    continue;
-                }
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                if (!hasResults) break;
+                maxSoldAt = minSoldAtInBatch;
             }
         }
     }

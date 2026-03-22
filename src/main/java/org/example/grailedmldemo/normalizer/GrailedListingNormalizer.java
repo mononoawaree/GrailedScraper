@@ -78,6 +78,7 @@ public class GrailedListingNormalizer implements Normalizer<GrailedListingRaw> {
         listing.setCreatedAt(rawData.getCreated_at());
         listing.setPriceUpdatedAt(rawData.getPrice_updated_at());
         listing.setSoldAt(rawData.getSold_at());
+        listing.setSoldAtI(rawData.getSold_at_i());
         listing.setLocation(rawData.getLocation());
         listing.setCoverPhotoUrl(rawData.getCover_photo().getUrl());
         listing.setPhotoCount(rawData.getPhoto_count());

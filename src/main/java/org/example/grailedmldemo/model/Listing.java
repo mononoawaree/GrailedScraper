@@ -38,6 +38,7 @@ public class Listing {
     private String createdAt;
     private String priceUpdatedAt;
     private String soldAt;
+    private Long soldAtI;
 
     private String coverPhotoUrl;
     private String location;

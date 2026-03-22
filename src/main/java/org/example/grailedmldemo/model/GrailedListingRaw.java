@@ -54,7 +54,7 @@ public class GrailedListingRaw {
     private String price_updated_at; //tells when the last price drop happened relative to the sale
     private String sold_at;
     //IMPLEMENT IT
-    private String sold_at_i;
+    private Long sold_at_i;
 
     //Demand Signals
     @SerializedName("followerno")

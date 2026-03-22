@@ -16,6 +16,7 @@ public class GrailedListingFetcher implements Fetcher {
     private final String baseUrl;
     private final String apiKey;
     private final String appId;
+    private Long maxSoldAt;
 
     public GrailedListingFetcher(OkHttpClient client, String baseUrl, String apiKey, String appId) {
         this.client = client;
@@ -27,14 +28,21 @@ public class GrailedListingFetcher implements Fetcher {
     // Builds the POST request
     // Returns raw JSON string
     @Override
-    public String fetch(String designerName, int page) throws FetchException, IOException {
+    public String fetch(String designerName, int page, Long maxSoldAt) throws FetchException, IOException {
         String encodedName = URLEncoder.encode(designerName, StandardCharsets.UTF_8);
+        String numericFilters;
+        if (maxSoldAt != null) {
+            numericFilters = "%5B%22sold_price%3E%3D0%22%2C%22sold_price%3C%3D1000000%22%2C%22sold_at_i%3C" + maxSoldAt + "%22%5D";
+        } else {
+            numericFilters = "%5B%22sold_price%3E%3D0%22%2C%22sold_price%3C%3D1000000%22%5D";
+        }
         String params = "facetFilters=%5B%5B%22designers.name%3A"
                 + encodedName
                 + "%22%5D%5D"
                 + "&hitsPerPage=40"
                 + "&page=" + page
-                + "&numericFilters=%5B%22sold_price%3E%3D0%22%2C%22sold_price%3C%3D1000000%22%5D"
+                + "&numericFilters="
+                + numericFilters
                 + "&query=";
         String body = "{\"requests\":[{\"indexName\":\"Listing_sold_production\",\"params\":\"" + params + "\"}]}";
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), body);
