@@ -1,25 +1,19 @@
 package org.example.grailedmldemo;
 
 import okhttp3.OkHttpClient;
-import org.example.grailedmldemo.config.AlgoliaConfig;
-import org.example.grailedmldemo.config.DatabaseConfig;
-import org.example.grailedmldemo.controller.ScrapeController;
 import org.example.grailedmldemo.exception.FetchException;
-import org.example.grailedmldemo.service.GrailedScrapeService;
 import org.example.grailedmldemo.exception.ParseException;
-import org.example.grailedmldemo.fetcher.GrailedDesignerFetcher;
-import org.example.grailedmldemo.fetcher.GrailedListingFetcher;
-import org.example.grailedmldemo.normalizer.GrailedListingNormalizer;
-import org.example.grailedmldemo.parser.GrailedDesignerParser;
-import org.example.grailedmldemo.parser.GrailedListingParser;
-import org.example.grailedmldemo.repository.DesignerRepository;
-import org.example.grailedmldemo.repository.ListingRepository;
-import javax.sql.DataSource;
+import org.example.grailedmldemo.fetcher.VestiaireListingFetcher;
+import org.example.grailedmldemo.model.VestiaireListingRaw;
+import org.example.grailedmldemo.parser.VestiaireListingParser;
+
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 public class GrailedMlDemoApplication {
     public static void main(String[] args) throws IOException, ParseException, SQLException, FetchException {
+        /*
         OkHttpClient client = new OkHttpClient();
         String baseUrl = AlgoliaConfig.getBaseUrl();
         String apiKey = AlgoliaConfig.getApiKey();
@@ -35,5 +29,16 @@ public class GrailedMlDemoApplication {
         GrailedScrapeService grailedScrapeService = new GrailedScrapeService(listingFetcher, designerFetcher, designerParser, listingParser, listingNormalizer, listingRepository, designerRepository, ds);
         ScrapeController scrapeController = new ScrapeController(grailedScrapeService);
         scrapeController.run();
+         */
+        OkHttpClient client = new OkHttpClient();
+        VestiaireListingFetcher vestiaireListingFetcher = new VestiaireListingFetcher("https://search.vestiairecollective.com/v1/product/search?=&=", client);
+        String json;
+        List<VestiaireListingRaw> vestiaireListingRaws;
+        try {
+            json = vestiaireListingFetcher.fetch("stone island", 60);
+        } catch (FetchException e) {
+            json = e.getMessage();
+        }
+        System.out.println(json);
     }
 }

@@ -18,7 +18,6 @@ import org.example.grailedmldemo.repository.ListingRepository;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,7 +1,5 @@
 CREATE TABLE IF NOT EXISTS designers(
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    count INTEGER
+
 );
 CREATE TABLE IF NOT EXISTS sold_listings(
     id INTEGER PRIMARY KEY,
