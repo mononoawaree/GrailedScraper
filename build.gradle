@@ -23,6 +23,7 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.2'
     implementation 'com.zaxxer:HikariCP:7.0.2'
     implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'com.microsoft.playwright:playwright:1.59.0'
     compileOnly 'org.projectlombok:lombok:1.18.42'
     annotationProcessor 'org.projectlombok:lombok:1.18.42'
 }

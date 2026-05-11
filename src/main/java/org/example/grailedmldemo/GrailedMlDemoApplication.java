@@ -1,44 +1,59 @@
 package org.example.grailedmldemo;
 
-import okhttp3.OkHttpClient;
 import org.example.grailedmldemo.exception.FetchException;
 import org.example.grailedmldemo.exception.ParseException;
-import org.example.grailedmldemo.fetcher.VestiaireListingFetcher;
-import org.example.grailedmldemo.model.VestiaireListingRaw;
-import org.example.grailedmldemo.parser.VestiaireListingParser;
+import org.example.grailedmldemo.fetcher.GrailedDesignerFetcher;
+import org.example.grailedmldemo.fetcher.VestiaireDesignerFetcher;
+import org.example.grailedmldemo.model.Designer;
+import org.example.grailedmldemo.model.VestiaireDesignerRaw;
+import org.example.grailedmldemo.parser.GrailedDesignerParser;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GrailedMlDemoApplication {
-    public static void main(String[] args) throws IOException, ParseException, SQLException, FetchException {
-        /*
-        OkHttpClient client = new OkHttpClient();
-        String baseUrl = AlgoliaConfig.getBaseUrl();
-        String apiKey = AlgoliaConfig.getApiKey();
-        String appId = AlgoliaConfig.getAppId();
-        DataSource ds = DatabaseConfig.getDataSource();
-        GrailedListingFetcher listingFetcher = new GrailedListingFetcher(client, baseUrl, apiKey, appId);
-        GrailedDesignerFetcher designerFetcher = new GrailedDesignerFetcher(client);
-        GrailedDesignerParser designerParser = new GrailedDesignerParser();
-        GrailedListingParser listingParser = new GrailedListingParser();
-        GrailedListingNormalizer listingNormalizer = new GrailedListingNormalizer();
-        ListingRepository listingRepository = new ListingRepository(ds);
-        DesignerRepository designerRepository = new DesignerRepository(ds);
-        GrailedScrapeService grailedScrapeService = new GrailedScrapeService(listingFetcher, designerFetcher, designerParser, listingParser, listingNormalizer, listingRepository, designerRepository, ds);
-        ScrapeController scrapeController = new ScrapeController(grailedScrapeService);
-        scrapeController.run();
-         */
-        OkHttpClient client = new OkHttpClient();
-        VestiaireListingFetcher vestiaireListingFetcher = new VestiaireListingFetcher("https://search.vestiairecollective.com/v1/product/search?=&=", client);
-        String json;
-        List<VestiaireListingRaw> vestiaireListingRaws;
-        try {
-            json = vestiaireListingFetcher.fetch("stone island", 60);
-        } catch (FetchException e) {
-            json = e.getMessage();
+    public static void main(String[] args) throws Exception, ParseException, FetchException {
+        List<Designer> vs = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("vestiaire_brands.txt"))) {
+            br.readLine();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                Designer vestiaire = new Designer();
+                String[] parts = line.split("\t");
+                if (parts.length < 4) {
+                    System.out.println("Skipping: " + line);
+                    continue;
+                }
+                vestiaire.setId(parts[0].trim());
+                vestiaire.setName(parts[1].trim());
+                vestiaire.setSlug(parts[2].trim());
+                vestiaire.setCount(parts[3].trim());
+                vs.add(vestiaire);
+            }
+            // After the file reading loop, add the ones that got skipped
+            vs.add(new Designer("478", "zapa", "zapa", "2564", "vestiaire"));
+            vs.add(new Designer("11924", "zu elements", "zu-elements", "178", "vestiaire"));
+            vs.add(new Designer("15312", "zua", "zua", "6", "vestiaire"));
+            vs.add(new Designer("9074", "ader error", "ader-error", "217","vestiaire"));
+            vs.add(new Designer("11987", "donald duck disney x gucci", "donald-duck-disney-x-gucci", "122", "vestiaire"));
+            vs.add(new Designer("235", "escada", "escada", "12470", "vestiaire"));
+            vs.add(new Designer("523", "james perse", "james-perse", "854", "vestiaire"));
+            vs.add(new Designer("9579", "nike x undercover", "nike-x-undercover", "168", "vestiaire"));
         }
-        System.out.println(json);
+//        for (Designer v : vs) {
+//            System.out.println(v.getId() + " " + v.getName() + " " + v.getSlug() + " " + v.getCount());
+//        }
+        Designer grailed = new Designer();
+        GrailedDesignerFetcher fetcher = new GrailedDesignerFetcher();
+        String json = fetcher.fetch("https://www.grailed.com/api/designers");
+        GrailedDesignerParser parser = new GrailedDesignerParser();
+        List<Designer> gl = parser.parse(json);
+        for (Designer d : gl) {
+            d.setSource("grailed");
+        }
+        // Compare vs and gl
     }
 }

@@ -6,7 +6,7 @@ import org.example.grailedmldemo.exception.FetchException;
 import org.example.grailedmldemo.exception.ParseException;
 import org.example.grailedmldemo.fetcher.GrailedDesignerFetcher;
 import org.example.grailedmldemo.fetcher.GrailedListingFetcher;
-import org.example.grailedmldemo.model.GrailedDesigner;
+import org.example.grailedmldemo.model.Designer;
 import org.example.grailedmldemo.model.GrailedListingRaw;
 import org.example.grailedmldemo.model.Listing;
 import org.example.grailedmldemo.normalizer.GrailedListingNormalizer;
@@ -57,9 +57,9 @@ public class GrailedScrapeService {
             System.out.println("Error fetching designers: " + e.getMessage());
             return;
         }
-        List<GrailedDesigner> designers = grailedDesignerParser.parse(designersJson);
-        for (GrailedDesigner designer : designers) {
-            designerRepository.save(designer);
+        List<Designer> designers = grailedDesignerParser.parse(designersJson);
+        for (Designer designer : designers) {
+            designerRepository.saveGrailedDesigners(designer);
         }
         List<String> designerNames = designerRepository.getAllDesignerNames();
         //Loop thru all designers and their listings
