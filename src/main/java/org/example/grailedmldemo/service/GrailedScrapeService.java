@@ -59,12 +59,12 @@ public class GrailedScrapeService {
         }
         List<Designer> designers = grailedDesignerParser.parse(designersJson);
         for (Designer designer : designers) {
-            designerRepository.saveGrailedDesigners(designer);
+            designerRepository.saveUniqueDesigners(designer, "grailed");
         }
-        List<String> designerNames = designerRepository.getAllDesignerNames();
+        List<Designer> designerNames = designerRepository.getAllDesignerNamesAndSlugs();
         //Loop thru all designers and their listings
 
-        for (String designerName : designerNames) {
+        for (Designer designerName : designerNames) {
             Long maxSoldAt = null;
             while (true) {
                 long minSoldAtInBatch = Long.MAX_VALUE;
@@ -75,7 +75,7 @@ public class GrailedScrapeService {
                     List<Listing> normalizedListings = new ArrayList<>();
                     System.out.println("Scraping: " + designerName + " | Page: " + i);
                     try {
-                        listingJson = grailedListingFetcher.fetch(designerName, i, maxSoldAt);
+                        listingJson = grailedListingFetcher.fetch(designerName.getName(), i, maxSoldAt);
                     } catch (Exception | FetchException e) {
                         System.out.println("Error fetching listings for " + designerName + ": " + e.getMessage());
                         continue;
