@@ -6,8 +6,8 @@ import org.example.grailedmldemo.exception.FetchException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
-
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //implementation (uses OkHttp) of the fetcher interface to retrieve HTML content from Grailed listing pages. This class will handle the HTTP requests and responses, including error handling and retries if necessary.
 // It may also include logic for handling rate limits or using proxies if required by the Grailed API or website.
@@ -54,7 +54,32 @@ public class GrailedListingFetcher implements Fetcher {
                 .build();
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new FetchException("Failed: " + response.code());
+                throw new FetchException("Failed: " + response.code() + " " + response.body().string());
+            }
+            return response.body().string();
+        }
+    }
+
+    public String fetchOne(String url) throws FetchException, IOException {
+        String listingId;
+        Pattern pattern = Pattern.compile("https://www\\.grailed\\.com/listings/(\\d+)");
+        Matcher matcher = pattern.matcher(url);
+        if (!matcher.find()) {
+            throw new FetchException("Invalid URL, try again");
+        }
+        listingId = matcher.group(1);
+        System.out.println("Listing ID: " + listingId);
+        String body = "{\"requests\":[{\"indexName\":\"Listing_production\",\"params\":\"filters=objectID%3A" + listingId + "&hitsPerPage=1\"}]}";
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), body);
+        Request request = new Request.Builder()
+                .url(baseUrl)
+                .addHeader("X-Algolia-API-Key", apiKey)
+                .addHeader("X-Algolia-Application-Id", appId)
+                .post(requestBody)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new FetchException("Failed: " + response.code() + " " + response.body().string());
             }
             return response.body().string();
         }
